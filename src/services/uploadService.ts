@@ -38,12 +38,11 @@ export class UploadService {
         color: files.color[0].originalname,
       },
       processedFiles: {
-        face: result.processedFace,
-        shape: result.processedShape,
-        color: result.processedColor,
+        face: result?.face,
+        shape: result?.shape,
+        color: result?.color,
       },
       result: result.result,
-      error: result.error,
     };
   }
 }
