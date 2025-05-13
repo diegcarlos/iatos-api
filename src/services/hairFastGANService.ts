@@ -61,10 +61,11 @@ export class HairFastGANService {
       })) as PredictResult;
 
       return {
-        face: faceResult.data[0],
-        shape: shapeResult.data[0],
-        color: colorResult.data[0],
+        processedFace: faceResult.data,
+        processedShape: shapeResult.data,
+        processedColor: colorResult.data,
         result: swapResult.data[0],
+        error: swapResult.data[1],
       };
     } catch (error) {
       console.log(error);

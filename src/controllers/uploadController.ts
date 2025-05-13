@@ -31,8 +31,10 @@ export class UploadController {
         res.json({
           message: "Processamento concluído com sucesso",
           files: result.originalFiles,
-          processedFiles: result.processedFiles,
-          result: result.result,
+          face: result.processedFiles.face[0],
+          shape: result.processedFiles.shape[0],
+          color: result.processedFiles.color[0],
+          result: result.result.value,
         });
       }
     } catch (error: any) {
