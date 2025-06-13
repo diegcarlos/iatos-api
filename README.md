@@ -1,98 +1,237 @@
-# API de Processamento de Imagens com HairFastGAN
+# IATOS API
 
-API para processamento de imagens utilizando o modelo HairFastGAN para geração de estilos de cabelo.
+API para processamento de imagens com integração ao Cloudflare R2 para armazenamento.
 
-## Requisitos
+## Funcionalidades
 
-- Node.js
-- pnpm
+- **Hair Fast Generation**: Processamento de imagens usando HairFastGAN
+- **RunwayML Hair**: Geração de imagens usando RunwayML
+- **BFL Hair**: Processamento usando API BFL
+- **Armazenamento R2**: Todas as imagens são automaticamente armazenadas no Cloudflare R2
 
-## Instalação
+## Configuração
+
+### 1. Instalação das Dependências
 
 ```bash
-# Instalar dependências
 pnpm install
 ```
 
-## Desenvolvimento
+### 2. Configuração das Variáveis de Ambiente
+
+Copie o arquivo `.env.example` para `.env` e configure as variáveis:
 
 ```bash
-# Iniciar servidor em modo desenvolvimento
-pnpm dev
+cp .env.example .env
 ```
 
-## Build e Produção
+#### Variáveis Obrigatórias:
 
-```bash
-# Criar build do projeto
-pnpm build
+**API Configuration:**
+- `API_KEY`: Chave de autenticação da API
+- `PORT`: Porta do servidor (padrão: 4444)
 
-# Iniciar servidor em produção
-pnpm start
+**RunwayML:**
+- `RUNWAYML_API_SECRET`: Chave da API RunwayML
+- `PROMPT_RUNWAYML`: Prompt padrão para geração de imagens
+
+**Cloudflare R2:**
+- `R2_ENDPOINT`: URL do endpoint R2 (formato: https://account-id.r2.cloudflarestorage.com)
+- `R2_ACCESS_KEY_ID`: Access Key ID do R2
+- `R2_SECRET_ACCESS_KEY`: Secret Access Key do R2
+- `R2_BUCKET_NAME`: Nome do bucket R2
+- `R2_PUBLIC_URL`: URL pública para acesso aos arquivos (seu domínio customizado)
+
+### 3. Configuração do Cloudflare R2
+
+1. **Criar um bucket R2** no painel da Cloudflare
+2. **Gerar credenciais de API** com permissões de leitura/escrita
+3. **Configurar domínio customizado** (opcional, mas recomendado)
+4. **Configurar CORS** se necessário para acesso via browser
+
+## Estrutura de Armazenamento no R2
+
+Os arquivos são organizados automaticamente em pastas:
+
+```
+bucket/
+├── hair-fast-generation/
+│   ├── originals/          # Imagens originais (face, shape, color)
+│   └── results/            # Resultados processados
+├── runwayml-hair/
+│   ├── originals/          # Imagens de entrada
+│   └── results/            # Imagens geradas
+└── bfl-hair/
+    ├── originals/          # Imagens de entrada
+    └── results/            # Imagens processadas
 ```
 
-## Uso da API
+## Endpoints
 
-### Upload e Processamento de Imagens
+### GET `/result-image/:imageId`
 
-**Endpoint:** `POST /hair-fast-generation`
+Retorna uma imagem armazenada no R2 pelo seu ID.
 
-**Content-Type:** `multipart/form-data`
+**Parâmetros:**
+- `imageId`: ID da imagem (nome do arquivo ou key completa no R2)
 
-**Campos:**
-- `face`: Arquivo de imagem do rosto (obrigatório)
-- `shape`: Arquivo de imagem com o estilo de cabelo desejado (obrigatório)
-- `color`: Arquivo de imagem com a cor de cabelo desejada (obrigatório)
-
-**Exemplo de uso com curl:**
-```bash
-curl -X POST -F "face=@face.jpg" -F "shape=@shape.jpg" -F "color=@color.jpg" http://localhost:3000/hair-fast-generation
+**Exemplo:**
+```
+GET http://localhost:4444/result-image/uuid-da-imagem.jpg
 ```
 
-**Resposta de sucesso:**
+**Resposta:**
+- **200**: Retorna a imagem diretamente (Content-Type: image/*)
+- **400**: ID da imagem é obrigatório
+- **404**: Imagem não encontrada
+- **500**: Erro interno do servidor
+
+**Funcionalidades:**
+- Busca automática em todas as pastas do R2
+- Cache público configurado (1 ano)
+- Suporte a diferentes formatos de imagem
+- Headers apropriados para exibição direta no browser
+
+### POST `/hair-fast-generation`
+
+Processa múltiplas imagens usando HairFastGAN.
+
+**Headers:**
+```
+Authorization: Bearer {API_KEY}
+Content-Type: multipart/form-data
+```
+
+**Body (form-data):**
+- `face`: Arquivo de imagem (rosto)
+- `shape`: Arquivo de imagem (formato do cabelo)
+- `color`: Arquivo de imagem (cor do cabelo)
+
+**Resposta:**
 ```json
 {
   "message": "Processamento concluído com sucesso",
   "files": {
-    "face": "1234567890-face.jpg",
-    "shape": "1234567890-shape.jpg",
-    "color": "1234567890-color.jpg"
+    "face": {
+      "name": "face.jpg",
+      "url": "https://your-domain.com/hair-fast-generation/originals/uuid.jpg",
+      "key": "hair-fast-generation/originals/uuid.jpg"
+    },
+    "shape": { /* ... */ },
+    "color": { /* ... */ }
   },
-  "processedFiles": {
-    "face": "processed-face.jpg",
-    "shape": "processed-shape.jpg",
-    "color": "processed-color.jpg"
-  },
-  "result": "result-image.jpg"
+  "face": [/* dados processados */],
+  "shape": [/* dados processados */],
+  "color": [/* dados processados */],
+  "result": "https://your-domain.com/hair-fast-generation/results/result-timestamp.jpg"
 }
 ```
 
-**Resposta com erro:**
+### POST `/runwayml-hair`
+
+Gera imagens usando RunwayML.
+
+**Headers:**
+```
+Authorization: Bearer {API_KEY}
+Content-Type: multipart/form-data
+```
+
+**Body (form-data):**
+- `image`: Arquivo de imagem de referência
+
+**Resposta:**
 ```json
 {
-  "message": "Processamento concluído com avisos",
-  "error": "Mensagem de erro do processamento",
-  "files": {
-    "face": "1234567890-face.jpg",
-    "shape": "1234567890-shape.jpg",
-    "color": "1234567890-color.jpg"
+  "message": "Processamento RunwayML concluído com sucesso",
+  "image": {
+    "name": "image.jpg",
+    "url": "https://your-domain.com/runwayml-hair/originals/uuid.jpg",
+    "key": "runwayml-hair/originals/uuid.jpg"
   },
-  "processedFiles": {
-    "face": "processed-face.jpg",
-    "shape": "processed-shape.jpg",
-    "color": "processed-color.jpg"
-  },
-  "result": "result-image.jpg"
+  "prompt": "prompt usado",
+  "result": {
+    "success": true,
+    "taskId": "task_id",
+    "status": "SUCCEEDED",
+    "output": "https://your-domain.com/runwayml-hair/results/result-timestamp.jpg",
+    "message": "Imagem e prompt processados com sucesso",
+    "processedAt": "2024-01-01T00:00:00.000Z"
+  }
 }
 ```
 
-## Processamento
+### POST `/bfl-hair`
 
-A API utiliza o modelo HairFastGAN para processar as imagens. O processo inclui:
+Processa imagens usando API BFL.
 
-1. Redimensionamento e alinhamento das imagens
-2. Processamento do estilo de cabelo
-3. Aplicação da cor desejada
-4. Geração do resultado final
+**Headers:**
+```
+Authorization: Bearer {API_KEY}
+Content-Type: multipart/form-data
+```
 
-Os arquivos são salvos no diretório `uploads/` com nomes únicos baseados no timestamp.
+**Body (form-data):**
+- `image`: Arquivo de imagem
+
+**Resposta:**
+```json
+{
+  "message": "Processamento BFL concluído com sucesso",
+  "files": {
+    "name": "image.jpg",
+    "url": "https://your-domain.com/bfl-hair/originals/uuid.jpg",
+    "key": "bfl-hair/originals/uuid.jpg"
+  },
+  "result": "https://your-domain.com/bfl-hair/results/result-timestamp.png",
+  "statusCode": 200,
+  "processedAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+## Desenvolvimento
+
+### Executar em modo de desenvolvimento:
+```bash
+pnpm dev
+```
+
+### Build para produção:
+```bash
+pnpm build
+pnpm start
+```
+
+## Arquitetura
+
+### Serviços
+
+- **UploadService**: Coordena o processamento e armazenamento
+- **R2Service**: Gerencia uploads para Cloudflare R2
+- **HairFastGANService**: Interface com a API HairFastGAN
+
+### Configurações
+
+- **multer.ts**: Configuração de upload de arquivos
+- **r2.ts**: Configuração do cliente R2/S3
+
+### Fluxo de Processamento
+
+1. **Upload**: Arquivo recebido via multipart/form-data
+2. **Armazenamento Original**: Imagem original salva no R2
+3. **Processamento**: Imagem processada pela API específica
+4. **Armazenamento Resultado**: Resultado salvo no R2
+5. **Resposta**: URLs públicas retornadas ao cliente
+
+## Segurança
+
+- Todas as rotas requerem autenticação via Bearer token
+- Arquivos são armazenados com nomes únicos (UUID)
+- Credenciais sensíveis devem estar no arquivo `.env`
+- Nunca commitar o arquivo `.env` no repositório
+
+## Monitoramento
+
+- Logs de erro são registrados no console
+- Arquivo `log.txt` é gerado para debug (rota BFL)
+- Status de processamento é retornado nas respostas

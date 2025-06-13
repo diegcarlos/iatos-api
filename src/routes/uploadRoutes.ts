@@ -15,4 +15,21 @@ router.post(
   (req, res) => uploadController.uploadFiles(req, res)
 );
 
+router.post(
+  '/runwayml-hair',
+  upload.single('image'),
+  (req, res) => uploadController.uploadFiles(req, res)
+)
+
+router.post(
+  '/bfl-hair',
+  upload.single('image'),
+  (req, res) => uploadController.uploadFileBFL(req, res)
+)
+
+router.get(
+  '/result-image/:imageId',
+  (req, res) => uploadController.getImage(req, res)
+)
+
 export default router;
