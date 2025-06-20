@@ -28,14 +28,12 @@ cp .env.example .env
 #### Variáveis Obrigatórias:
 
 **API Configuration:**
+
 - `API_KEY`: Chave de autenticação da API
 - `PORT`: Porta do servidor (padrão: 4444)
 
-**RunwayML:**
-- `RUNWAYML_API_SECRET`: Chave da API RunwayML
-- `PROMPT_RUNWAYML`: Prompt padrão para geração de imagens
-
 **Cloudflare R2:**
+
 - `R2_ENDPOINT`: URL do endpoint R2 (formato: https://account-id.r2.cloudflarestorage.com)
 - `R2_ACCESS_KEY_ID`: Access Key ID do R2
 - `R2_SECRET_ACCESS_KEY`: Secret Access Key do R2
@@ -73,20 +71,24 @@ bucket/
 Retorna uma imagem armazenada no R2 pelo seu ID.
 
 **Parâmetros:**
+
 - `imageId`: ID da imagem (nome do arquivo ou key completa no R2)
 
 **Exemplo:**
+
 ```
 GET http://localhost:4444/result-image/uuid-da-imagem.jpg
 ```
 
 **Resposta:**
-- **200**: Retorna a imagem diretamente (Content-Type: image/*)
+
+- **200**: Retorna a imagem diretamente (Content-Type: image/\*)
 - **400**: ID da imagem é obrigatório
 - **404**: Imagem não encontrada
 - **500**: Erro interno do servidor
 
 **Funcionalidades:**
+
 - Busca automática em todas as pastas do R2
 - Cache público configurado (1 ano)
 - Suporte a diferentes formatos de imagem
@@ -97,17 +99,20 @@ GET http://localhost:4444/result-image/uuid-da-imagem.jpg
 Processa múltiplas imagens usando HairFastGAN.
 
 **Headers:**
+
 ```
 Authorization: Bearer {API_KEY}
 Content-Type: multipart/form-data
 ```
 
 **Body (form-data):**
+
 - `face`: Arquivo de imagem (rosto)
 - `shape`: Arquivo de imagem (formato do cabelo)
 - `color`: Arquivo de imagem (cor do cabelo)
 
 **Resposta:**
+
 ```json
 {
   "message": "Processamento concluído com sucesso",
@@ -117,12 +122,22 @@ Content-Type: multipart/form-data
       "url": "https://your-domain.com/hair-fast-generation/originals/uuid.jpg",
       "key": "hair-fast-generation/originals/uuid.jpg"
     },
-    "shape": { /* ... */ },
-    "color": { /* ... */ }
+    "shape": {
+      /* ... */
+    },
+    "color": {
+      /* ... */
+    }
   },
-  "face": [/* dados processados */],
-  "shape": [/* dados processados */],
-  "color": [/* dados processados */],
+  "face": [
+    /* dados processados */
+  ],
+  "shape": [
+    /* dados processados */
+  ],
+  "color": [
+    /* dados processados */
+  ],
   "result": "https://your-domain.com/hair-fast-generation/results/result-timestamp.jpg"
 }
 ```
@@ -132,15 +147,18 @@ Content-Type: multipart/form-data
 Gera imagens usando RunwayML.
 
 **Headers:**
+
 ```
 Authorization: Bearer {API_KEY}
 Content-Type: multipart/form-data
 ```
 
 **Body (form-data):**
+
 - `image`: Arquivo de imagem de referência
 
 **Resposta:**
+
 ```json
 {
   "message": "Processamento RunwayML concluído com sucesso",
@@ -166,15 +184,18 @@ Content-Type: multipart/form-data
 Processa imagens usando API BFL.
 
 **Headers:**
+
 ```
 Authorization: Bearer {API_KEY}
 Content-Type: multipart/form-data
 ```
 
 **Body (form-data):**
+
 - `image`: Arquivo de imagem
 
 **Resposta:**
+
 ```json
 {
   "message": "Processamento BFL concluído com sucesso",
@@ -192,11 +213,13 @@ Content-Type: multipart/form-data
 ## Desenvolvimento
 
 ### Executar em modo de desenvolvimento:
+
 ```bash
 pnpm dev
 ```
 
 ### Build para produção:
+
 ```bash
 pnpm build
 pnpm start

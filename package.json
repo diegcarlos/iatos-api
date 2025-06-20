@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
@@ -15,8 +15,6 @@
   "packageManager": "pnpm@10.5.2",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.828.0",
-    "@gradio/client": "^1.14.2",
-    "@runwayml/sdk": "^2.3.0",
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.1",
     "@types/multer": "^1.4.12",

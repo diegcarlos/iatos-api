@@ -1,0 +1,36 @@
+Hair Restoration Simulation Prompt (FLUX-Kontext)
+
+General Instructions (Always Apply):
+
+Simulate a medically realistic hair restoration for pre-surgical evaluation.
+
+- Do not modify, alter, or enhance any part of the face, facial features, skin tone, lighting, shadows, facial expression, or background.
+- Fully preserve all existing hair exactly as shown in the original image.
+- Detect and identify bald or thinning areas only.
+- Fill these areas with natural-looking hair matching:
+  - The exact color of the person's existing hair (preserve any grey, white, or mixed tones)
+  - The natural texture (straight, wavy, curly, fine, coarse)
+  - The person’s age, ethnicity, and scalp visibility
+- Avoid artificial volume, uniform density, or beautification.
+- Hair density must be plausible, age-appropriate, and suitable for professional surgical planning.
+- Preserve skin transparency and scalp characteristics where appropriate.
+
+Conditional Instructions (Apply Depending on Image):
+
+If a red guideline (hairline marker) is visible in the image:
+
+- The red line indicates the exact hairline boundary.
+- Extend hair coverage up to this red line only.
+- Ensure smooth density transition up to the line; avoid abrupt density changes.
+
+If no guideline is present:
+
+- Use the current natural hairline and existing hair shape as reference.
+- Estimate a natural, realistic restoration respecting donor area limitations.
+
+Technical Reinforcements (Always Apply):
+
+- Do not apply cosmetic beautification.
+- Do not smooth facial skin, remove wrinkles, or alter skin details.
+- Do not modify lighting, shadows, or background.
+- Simulate only the hair restoration, for realistic medical evaluation purposes.
