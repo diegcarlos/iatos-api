@@ -31,6 +31,9 @@ export class UploadService {
 
       const url = "https://api.us1.bfl.ai/v1/flux-kontext-max";
 
+      const prompt = await getPromptBfl();
+
+      console.log(prompt);
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -38,7 +41,7 @@ export class UploadService {
           "x-key": "ffcfd387-5f08-4ec5-ab58-7f132aa62d47",
         },
         body: JSON.stringify({
-          prompt: getPromptBfl(),
+          prompt,
           input_image: fileToBase64(image),
           seed: 42,
           // aspect_ratio: '',

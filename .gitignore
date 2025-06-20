@@ -45,3 +45,6 @@ uploads/
 .cache/
 .npm/
 .eslintcache 
+
+# Arquivos de prompt
+bfl-prompt.txt
