@@ -29,7 +29,7 @@ export class UploadService {
       //GERA UM ARQUIVO TXT DE LOG DA IMAGEM COM FS
       fs.writeFileSync("log.txt", fileToBase64(image));
 
-      const url = "https://api.us1.bfl.ai/v1/flux-kontext-max";
+      const url = "https://api.us1.bfl.ai/v1/flux-kontext-pro";
 
       const prompt = await getPromptBfl();
 
