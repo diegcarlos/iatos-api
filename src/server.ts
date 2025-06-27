@@ -1,6 +1,7 @@
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
+import staRoutes from "./routes/staRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 
 const app = express();
@@ -17,6 +18,8 @@ app.use(
 
 // Rotas
 app.use("/", uploadRoutes);
+
+app.use("/sta", staRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
