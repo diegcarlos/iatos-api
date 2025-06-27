@@ -1,8 +1,8 @@
-import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-import { Readable } from 'stream';
-import { r2Client, R2_BUCKET_NAME, R2_PUBLIC_URL } from '../config/r2.js';
-import { v4 as uuidv4 } from 'uuid';
-import crypto from 'crypto';
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import crypto from "crypto";
+import { Readable } from "stream";
+import { v4 as uuidv4 } from "uuid";
+import { R2_BUCKET_NAME, R2_PUBLIC_URL, r2Client } from "../config/r2.js";
 
 export interface UploadResult {
   key: string;
@@ -27,14 +27,14 @@ export class R2Service {
    * @returns Informações do arquivo enviado
    */
   async uploadBuffer(
-    buffer: Buffer,
+    buffer: Buffer | string,
     originalName: string,
     contentType: string,
     folder?: string
   ): Promise<UploadResult> {
     try {
       // Gera um nome único para o arquivo
-      const fileExtension = originalName.split('.').pop() || '';
+      const fileExtension = originalName.split(".").pop() || "";
       const uniqueFileName = `${uuidv4()}.${fileExtension}`;
       const key = folder ? `${folder}/${uniqueFileName}` : uniqueFileName;
 
@@ -63,10 +63,10 @@ export class R2Service {
         size: buffer.length,
       };
     } catch (error) {
-      console.error('Erro ao fazer upload para R2:', error);
+      console.error("Erro ao fazer upload para R2:", error);
       throw new Error(
         `Falha no upload para R2: ${
-          error instanceof Error ? error.message : 'Erro desconhecido'
+          error instanceof Error ? error.message : "Erro desconhecido"
         }`
       );
     }
@@ -110,17 +110,17 @@ export class R2Service {
       }
 
       const buffer = Buffer.from(await response.arrayBuffer());
-      const contentType = response.headers.get('content-type') || 'image/jpeg';
-      
+      const contentType = response.headers.get("content-type") || "image/jpeg";
+
       // Gera um nome se não fornecido
       const finalFileName = fileName || `image-${Date.now()}.jpg`;
 
       return this.uploadBuffer(buffer, finalFileName, contentType, folder);
     } catch (error) {
-      console.error('Erro ao fazer upload da URL:', error);
+      console.error("Erro ao fazer upload da URL:", error);
       throw new Error(
         `Falha no upload da URL: ${
-          error instanceof Error ? error.message : 'Erro desconhecido'
+          error instanceof Error ? error.message : "Erro desconhecido"
         }`
       );
     }
@@ -132,7 +132,7 @@ export class R2Service {
    * @returns Hash MD5 do arquivo
    */
   private generateFileHash(buffer: Buffer): string {
-    return crypto.createHash('md5').update(buffer).digest('hex');
+    return crypto.createHash("md5").update(buffer).digest("hex");
   }
 
   /**
@@ -146,7 +146,7 @@ export class R2Service {
         Bucket: R2_BUCKET_NAME,
         Key: key,
       });
-      
+
       await r2Client.send(command);
       return true;
     } catch (error) {
@@ -169,7 +169,7 @@ export class R2Service {
         `runwayml-hair/originals/${imageId}`,
         `runwayml-hair/results/${imageId}`,
         `bfl-hair/originals/${imageId}`,
-        `bfl-hair/results/${imageId}`
+        `bfl-hair/results/${imageId}`,
       ];
 
       for (const key of possibleKeys) {
@@ -180,13 +180,13 @@ export class R2Service {
           });
 
           const response = await r2Client.send(command);
-          
+
           if (response.Body) {
             return {
               body: response.Body as Readable,
-              contentType: response.ContentType || 'image/jpeg',
+              contentType: response.ContentType || "image/jpeg",
               contentLength: response.ContentLength || 0,
-              lastModified: response.LastModified
+              lastModified: response.LastModified,
             };
           }
         } catch (error) {
@@ -197,7 +197,7 @@ export class R2Service {
 
       return null;
     } catch (error) {
-      console.error('Erro ao buscar imagem por ID:', error);
+      console.error("Erro ao buscar imagem por ID:", error);
       return null;
     }
   }

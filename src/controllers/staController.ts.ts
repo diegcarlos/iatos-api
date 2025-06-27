@@ -42,8 +42,8 @@ export class StaController {
       }
 
       const result = await this.staService.editImageWithInpaint({
-        imagePath: imageFile.buffer,
-        maskPath: maskFile.buffer,
+        imagePath: imageFile,
+        maskPath: maskFile,
         prompt,
       });
 
