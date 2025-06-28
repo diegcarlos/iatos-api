@@ -1,7 +1,7 @@
 import axios from "axios";
 import FormData from "form-data";
 import fs from "fs";
-import { Readable } from "stream";
+import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { R2Service } from "./r2Service";
 
@@ -47,8 +47,8 @@ export class StabilityAIService {
       });
 
       // Adicionar outros parâmetros
-      formData.append("prompt", params.prompt);
-      formData.append("negative_prompt", this.createDefaultNegativePrompt());
+      formData.append("prompt", this.buscaPrompt());
+      formData.append("negative_prompt", this.buscaNegativePrompt());
       formData.append("grow_mask", (params.growMask || 5).toString());
       formData.append("output_format", "webp");
 
@@ -110,21 +110,55 @@ export class StabilityAIService {
     }
   }
 
-  private createStreamFromInput(input: string | Buffer): Readable {
-    if (typeof input === "string") {
-      return fs.createReadStream(input);
-    } else {
-      return Readable.from(input);
+  createUpdateStaPrompt = async (prompt: string) => {
+    try {
+      //cria ou atualiza um arquivo txt local onde estara salvo o prompt do bfl
+
+      const filePath = path.join(__dirname, "..", "..", "sta-prompt.txt");
+      if (fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, prompt);
+      } else {
+        fs.writeFileSync(filePath, prompt);
+      }
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  createUpdateStaNegativePrompt = async (prompt: string) => {
+    try {
+      //cria ou atualiza um arquivo txt local onde estara salvo o prompt do bfl
+
+      const filePath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "/sta-negative-prompt.txt"
+      );
+      if (fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, prompt);
+      } else {
+        fs.writeFileSync(filePath, prompt);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  buscaPrompt(): string {
+    const filePath = path.join(__dirname, "..", "..", "sta-prompt.txt");
+    const prompt = fs.readFileSync(filePath, "utf8");
+    return prompt;
   }
 
-  // Método auxiliar para criar um prompt padrão para edição de cabelo
-  createHairEditPrompt(): string {
-    return "Edit this image to add realistic and natural hair onto the face mask area, matching the person's current hair style, color, and texture. The hair should be seamlessly integrated and evenly distributed across the entire mask, respecting the lighting and face contours to ensure a smooth and natural transition";
-  }
-
-  // Método auxiliar para criar um negative prompt padrão
-  createDefaultNegativePrompt(): string {
-    return "blurry, low resolution, unnatural colors, mismatched hair color, rough edges, unnatural hair texture, unrealistic shadows, distorted face, inconsistent lighting, partial hair, patchy areas, artificial appearance, extra limbs, deformed features, oversaturated colors";
+  buscaNegativePrompt(): string {
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "..",
+      "sta-negative-prompt.txt"
+    );
+    const prompt = fs.readFileSync(filePath, "utf8");
+    return prompt;
   }
 }

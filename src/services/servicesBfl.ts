@@ -3,9 +3,6 @@ import path from "path";
 
 const createUpdateBfl = async (prompt: string) => {
   try {
-    //cria ou atualiza um arquivo txt local onde estara salvo o prompt do bfl
-    console.log(__dirname);
-
     const filePath = path.join(__dirname, "..", "..", "bfl-prompt.txt");
     if (fs.existsSync(filePath)) {
       fs.writeFileSync(filePath, prompt);

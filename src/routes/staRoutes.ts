@@ -15,4 +15,16 @@ router.post("/edit-image", uploadFields, (req, res) =>
   staRoutes.editImage(req, res)
 );
 
+router.get("/prompt-sta", (req, res) => staRoutes.getPrompt(req, res));
+
+router.post("/prompt-sta", (req, res) => staRoutes.editPrompt(req, res));
+
+router.get("/negative-prompt-sta", (req, res) =>
+  staRoutes.getNegativePrompt(req, res)
+);
+
+router.post("/negative-prompt-sta", (req, res) =>
+  staRoutes.editNegativePrompt(req, res)
+);
+
 export default router;
