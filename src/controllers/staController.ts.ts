@@ -86,11 +86,27 @@ export class StaController {
   }
 
   async getNegativePrompt(req: Request, res: Response): Promise<void> {
+    const { headers } = req;
+    const token = headers.authorization;
+    if (!token || token !== `Bearer ${process.env.API_KEY}`) {
+      res.status(401).json({
+        error: "Unauthorized",
+      });
+      return;
+    }
     const negativePrompt = this.staService.buscaNegativePrompt();
     res.json({ negativePrompt });
   }
 
   async editNegativePrompt(req: Request, res: Response): Promise<void> {
+    const { headers } = req;
+    const token = headers.authorization;
+    if (!token || token !== `Bearer ${process.env.API_KEY}`) {
+      res.status(401).json({
+        error: "Unauthorized",
+      });
+      return;
+    }
     const { negativePrompt } = req.body;
     const result = await this.staService.createUpdateStaNegativePrompt(
       negativePrompt

@@ -14,6 +14,14 @@ export class UploadController {
 
   //get prompt bfl
   async getPromptBFL(req: Request, res: Response): Promise<void> {
+    const { headers } = req;
+    const token = headers.authorization;
+    if (!token || token !== `Bearer ${process.env.API_KEY}`) {
+      res.status(401).json({
+        error: "Unauthorized",
+      });
+      return;
+    }
     const prompt = await getPromptBfl();
     res.json({ prompt });
   }
@@ -65,6 +73,14 @@ export class UploadController {
   async getImage(req: Request, res: Response): Promise<void> {
     try {
       const { imageId } = req.params;
+      const { headers } = req;
+      const token = headers.authorization;
+      if (!token || token !== `Bearer ${process.env.API_KEY}`) {
+        res.status(401).json({
+          error: "Unauthorized",
+        });
+        return;
+      }
 
       if (!imageId) {
         res.status(400).json({
