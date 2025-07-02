@@ -36,7 +36,7 @@ export class R2Service {
       // Gera um nome único para o arquivo
       const fileExtension = originalName.split(".").pop() || "";
       const uniqueFileName = `${uuidv4()}.${fileExtension}`;
-      const key = folder ? `${folder}/${uniqueFileName}` : uniqueFileName;
+      const key = folder ? `${folder}/${originalName}` : uniqueFileName;
 
       // Comando para upload
       const command = new PutObjectCommand({
