@@ -68,11 +68,11 @@ export class StabilityAIService {
 
       const imageResult = response.data;
 
-      const imageKey = `${uuidv4()}.webp`;
+      const imageKey = `${uuidv4()}`;
 
       const original = await this.r2Client.uploadBuffer(
         Buffer.from(params.imagePath.buffer),
-        imageKey,
+        `${imageKey}.${params.imagePath.mimetype}`,
         params.imagePath.mimetype,
         "stability/original"
       );
@@ -82,7 +82,7 @@ export class StabilityAIService {
 
       const image = await this.r2Client.uploadBuffer(
         imageBuffer,
-        imageKey,
+        `${imageKey}.webp`,
         "image/webp",
         "stability/result"
       );
