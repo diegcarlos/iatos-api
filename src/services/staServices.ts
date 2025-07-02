@@ -82,7 +82,7 @@ export class StabilityAIService {
 
       const image = await this.r2Client.uploadBuffer(
         imageBuffer,
-        imageKey,
+        `${imageKey}.webp`,
         "image/webp",
         "stability/result"
       );
