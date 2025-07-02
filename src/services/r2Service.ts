@@ -1,7 +1,6 @@
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import crypto from "crypto";
 import { Readable } from "stream";
-import { v4 as uuidv4 } from "uuid";
 import { R2_BUCKET_NAME, R2_PUBLIC_URL, r2Client } from "../config/r2.js";
 
 export interface UploadResult {
@@ -34,9 +33,7 @@ export class R2Service {
   ): Promise<UploadResult> {
     try {
       // Gera um nome único para o arquivo
-      const fileExtension = originalName.split(".").pop() || "";
-      const uniqueFileName = `${uuidv4()}.${fileExtension}`;
-      const key = folder ? `${folder}/${originalName}` : uniqueFileName;
+      const key = folder ? `${folder}/${originalName}` : "";
 
       // Comando para upload
       const command = new PutObjectCommand({
@@ -99,7 +96,7 @@ export class R2Service {
    */
   async uploadFromUrl(
     imageUrl: string,
-    fileName?: string,
+    fileName: string,
     folder?: string
   ): Promise<UploadResult> {
     try {
@@ -113,7 +110,7 @@ export class R2Service {
       const contentType = response.headers.get("content-type") || "image/jpeg";
 
       // Gera um nome se não fornecido
-      const finalFileName = fileName || `image-${Date.now()}.jpg`;
+      const finalFileName = fileName;
 
       return this.uploadBuffer(buffer, finalFileName, contentType, folder);
     } catch (error) {

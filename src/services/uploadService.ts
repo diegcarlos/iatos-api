@@ -1,4 +1,5 @@
 import fs from "fs";
+import { v4 as uuidv4 } from "uuid";
 import { R2Service, UploadResult } from "./r2Service.js";
 import { getPromptBfl } from "./servicesBfl";
 // Inicializa o cliente RunwayML com a API key do ambiente
@@ -20,9 +21,13 @@ export class UploadService {
         throw new Error("Arquivo de imagem é obrigatório");
       }
 
+      const imageKey = `${uuidv4()}`;
+
       // Upload da imagem original para o R2
-      const originalUpload = await this.r2Service.uploadFile(
-        image,
+      const originalUpload = await this.r2Service.uploadBuffer(
+        image.buffer,
+        `${imageKey}.jpg`,
+        image.mimetype,
         "bfl-hair/originals"
       );
 
@@ -83,7 +88,7 @@ export class UploadService {
           try {
             resultUpload = await this.r2Service.uploadFromUrl(
               returnData.result.sample,
-              `bfl-result-${Date.now()}.png`,
+              `${imageKey}.png`,
               "bfl-hair/results"
             );
           } catch (error) {
