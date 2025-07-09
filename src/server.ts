@@ -7,14 +7,17 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 const app = express();
 const port = process.env.PORT || 4444;
 
-// Middleware para processar JSON
-app.use(express.json());
+// Middleware CORS
 app.use(
   cors({
     origin: "*",
     allowedHeaders: "*",
   })
 );
+
+// Middleware para processar JSON e form data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Rotas
 app.use("/", uploadRoutes);

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { gerarPromptComImagem } from "../services/openiIa";
 import { StabilityAIService } from "../services/staServices";
 
 export class StaController {
@@ -30,8 +31,50 @@ export class StaController {
         return;
       }
 
+      // Verificar se o arquivo tem buffer (memória) ou path (disco)
       const imageFile = files["image"][0];
+      if (!imageFile || (!imageFile.buffer && !imageFile.path)) {
+        res.status(400).json({
+          error: "Arquivo de imagem inválido - deve ter buffer ou path",
+        });
+        return;
+      }
+
+      // Verificar se o arquivo de máscara tem buffer ou path
       const maskFile = files["mask"][0];
+      if (!maskFile || (!maskFile.buffer && !maskFile.path)) {
+        res.status(400).json({
+          error: "Arquivo de máscara inválido - deve ter buffer ou path",
+        });
+        return;
+      }
+
+      // Extrair parâmetros opcionais do FormData
+      const age = req.body.age || null;
+      const volume = req.body.volume || null;
+
+      // Validar parâmetros de idade
+      const validAges = ["elderly", "middle-aged", "young"];
+      if (age && !validAges.includes(age)) {
+        res.status(400).json({
+          error:
+            "Parâmetro 'age' deve ser um dos seguintes valores: 'elderly', 'middle-aged', 'young'",
+        });
+        return;
+      }
+
+      // Validar parâmetros de volume
+      const validVolumes = ["more volume", "less volume", "natural"];
+      if (volume && !validVolumes.includes(volume)) {
+        res.status(400).json({
+          error:
+            "Parâmetro 'volume' deve ser um dos seguintes valores: 'more volume', 'less volume', 'natural'",
+        });
+        return;
+      }
+
+      const newPrompt = await gerarPromptComImagem(imageFile, age, volume);
+
       const prompt = this.staService.buscaPrompt();
 
       if (!prompt) {
@@ -44,7 +87,7 @@ export class StaController {
       const result = await this.staService.editImageWithInpaint({
         imagePath: imageFile,
         maskPath: maskFile,
-        prompt,
+        prompt: newPrompt || "",
       });
 
       res.json(result);

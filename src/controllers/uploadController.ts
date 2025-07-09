@@ -33,12 +33,51 @@ export class UploadController {
       if (!token || token !== `Bearer ${process.env.API_KEY}`) {
         throw new Error("Unauthorized");
       }
-
-      const files = req.file;
-      if (!files) {
-        throw new Error("No file uploaded");
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      if (!files || !files["image"]) {
+        res.status(400).json({
+          error: "Arquivo 'image' é obrigatório",
+        });
+        return;
       }
-      const result: any = await this.uploadService.processBFL(files);
+
+      const imageFile = files["image"][0];
+      if (!imageFile) {
+        res.status(400).json({
+          error: "Arquivo de imagem inválido",
+        });
+        return;
+      }
+
+      // Extrair parâmetros opcionais do FormData
+      const age = req.body.age || null;
+      const volume = req.body.volume || null;
+
+      // Validar parâmetros de idade
+      const validAges = ["elderly", "middle-aged", "young"];
+      if (age && !validAges.includes(age)) {
+        res.status(400).json({
+          error:
+            "Parâmetro 'age' deve ser um dos seguintes valores: 'elderly', 'middle-aged', 'young'",
+        });
+        return;
+      }
+
+      // Validar parâmetros de volume
+      const validVolumes = ["more volume", "less volume", "natural"];
+      if (volume && !validVolumes.includes(volume)) {
+        res.status(400).json({
+          error:
+            "Parâmetro 'volume' deve ser um dos seguintes valores: 'more volume', 'less volume', 'natural'",
+        });
+        return;
+      }
+
+      const result: any = await this.uploadService.processBFL(
+        imageFile,
+        age,
+        volume
+      );
 
       if (result.statusCode !== 200) {
         throw result;

@@ -1,5 +1,6 @@
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
+import { gerarPromptComImagem } from "./openiIa";
 import { R2Service, UploadResult } from "./r2Service.js";
 import { getPromptBfl } from "./servicesBfl";
 // Inicializa o cliente RunwayML com a API key do ambiente
@@ -15,7 +16,7 @@ export class UploadService {
     this.r2Service = new R2Service();
   }
 
-  async processBFL(image: Express.Multer.File) {
+  async processBFL(image: Express.Multer.File, age?: string, volume?: string) {
     try {
       if (!image) {
         throw new Error("Arquivo de imagem é obrigatório");
@@ -36,9 +37,21 @@ export class UploadService {
 
       const url = "https://api.us1.bfl.ai/v1/flux-kontext-pro";
 
-      const prompt = await getPromptBfl();
+      // Gerar prompt personalizado com IA se parâmetros foram fornecidos
+      let prompt: string;
+      if (age || volume) {
+        const ageParam = age || undefined;
+        const volumeParam = volume || undefined;
+        const generatedPrompt = await gerarPromptComImagem(
+          image,
+          ageParam,
+          volumeParam
+        );
+        prompt = generatedPrompt || (await getPromptBfl());
+      } else {
+        prompt = await getPromptBfl();
+      }
 
-      console.log(prompt);
       const response = await fetch(url, {
         method: "POST",
         headers: {

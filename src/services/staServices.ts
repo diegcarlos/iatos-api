@@ -46,13 +46,14 @@ export class StabilityAIService {
         contentType: params.maskPath.mimetype,
       });
 
+      // Usar o prompt gerado pela IA (que já inclui os modificadores de idade e volume)
+      let finalPrompt = params.prompt || this.buscaPrompt();
+
       // Adicionar outros parâmetros
-      formData.append("prompt", this.buscaPrompt());
+      formData.append("prompt", finalPrompt);
       formData.append("negative_prompt", this.buscaNegativePrompt());
       formData.append("grow_mask", (params.growMask || 5).toString());
       formData.append("output_format", "webp");
-
-      console.log("FormData criado com sucesso");
 
       const response = await axios.post(this.baseUrl, formData, {
         headers: {
