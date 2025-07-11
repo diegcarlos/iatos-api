@@ -45,7 +45,7 @@ export async function gerarPromptComImagem(
     .filter(Boolean)
     .join(" ");
 
-  const promptText = `Generate a visual prompt for BFL.ia to add hair within the white guideline area. The result must be natural and realistic, with the new hair ((seamlessly blending)) into the existing hair in ((color, texture, lighting, and direction)). The hair color must match the subject's visible hair exactly. ((Under no circumstance should the subject's face, facial features, expression, or skin be modified)). This is a strict requirement. ${specs}`;
+  const promptText = `Generate a single prompt for BFL.ia to ((fully fill in the bald area)) within the white guideline using ((extremely dense, thick, realistic hair)). The result must be natural and photorealistic. The added hair should ((match the original color, direction, texture, and lighting perfectly)) with ((no visible scalp)). ((Do not alter the face under any circumstances)) — the skin, expression, and facial features must remain exactly as in the original image. ${specs}`;
 
   try {
     const response = await openai.chat.completions.create({
@@ -54,7 +54,7 @@ export async function gerarPromptComImagem(
         {
           role: "system",
           content:
-            "You are a visual prompt engineer specialized in generating a single visual instruction for a hair enhancement AI. Use ((double parentheses)) around important instructions. Do not include multiple prompts or suggestions — only return a single, clear, weighted instruction. Never modify the subject's face.",
+            "You are a visual prompt engineer specialized in generating a single, precise prompt for a hair enhancement AI. Use ((double parentheses)) around important instructions. Ensure bald areas are completely filled in. Never return multiple prompt options. Never modify the face in any way.",
         },
         {
           role: "user",
