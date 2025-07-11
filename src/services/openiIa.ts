@@ -10,7 +10,6 @@ export async function gerarPromptComImagem(
   retryCount = 0,
   maxRetries = 3
 ): Promise<string> {
-  // Verificar se o arquivo está em memória (buffer) ou em disco (path)
   let imageBuffer: Buffer;
 
   if (image.buffer) {
@@ -26,9 +25,18 @@ export async function gerarPromptComImagem(
 
   const base64Image = imageBuffer.toString("base64");
 
-  // Construir o texto do prompt baseado nos parâmetros
-  let promptText =
-    "Generate a prompt for BFL.ia to add hair within the white guideline area. The result should be natural and realistic. The hair should blend seamlessly with the existing color without altering the face. Color should be a very important aspect.";
+  // Montar prompt base com ênfase em não alterar o rosto
+  let promptText = `
+Generate a prompt for BFL.ia to add hair within the white guideline area. 
+The result must be ((extremely natural and realistic)). 
+The added hair must blend ((perfectly)) with the existing color, texture, and lighting.
+
+((The face must remain 100% identical to the original image — including all facial features, skin texture, expression, and proportions.)) 
+((Absolutely no changes of any kind are allowed to the person's face.)) 
+Only the hair inside the white guideline should be enhanced.
+
+Hair color consistency is a ((critical priority)), and must follow the original hair seen in the image without introducing new tones or styles.
+`;
 
   if (age) {
     const ageSpecs = {
@@ -64,7 +72,7 @@ export async function gerarPromptComImagem(
         {
           role: "user",
           content: [
-            { type: "text", text: promptText },
+            { type: "text", text: promptText.trim() },
             {
               type: "image_url",
               image_url: {
@@ -79,7 +87,6 @@ export async function gerarPromptComImagem(
 
     const content = response.choices[0].message.content || "";
 
-    // Verificação segura com retry
     if (content.includes("I'm sorry") && retryCount < maxRetries) {
       console.warn(
         `⚠️ Tentativa ${retryCount + 1} falhou. Tentando novamente...`
