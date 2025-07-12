@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
+import sharp from "sharp";
 import { R2Service } from "../services/r2Service.js";
 import { createUpdateBfl, getPromptBfl } from "../services/servicesBfl";
 import { UploadService } from "../services/uploadService";
-
 export class UploadController {
   private uploadService: UploadService;
   private r2Service: R2Service;
@@ -42,6 +42,9 @@ export class UploadController {
       }
 
       const imageFile = files["image"][0];
+      //redimencionar a imagem para no maximo 1024px
+      const imageBuffer = await sharp(imageFile.path).resize(1024).toBuffer();
+      imageFile.buffer = imageBuffer;
       if (!imageFile) {
         res.status(400).json({
           error: "Arquivo de imagem inválido",
