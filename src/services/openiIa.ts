@@ -48,31 +48,31 @@ export async function gerarPromptComImagem(
   const promptText = `Generate a single prompt for BFL.ia to ((fully fill in the bald area)) within the white guideline using ((extremely dense, thick, realistic hair)). ((Follow the white line exactly — it defines the area for hair restoration)). The result must be natural and photorealistic. The added hair should ((match the original color, direction, texture, and lighting perfectly)) with ((no visible scalp)). ((Do not alter the face under any circumstances)) — the skin, expression, and facial features must remain exactly as in the original image. ${specs}`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a visual prompt engineer specialized in generating a single, precise prompt for a hair enhancement AI. Use ((double parentheses)) around important instructions. Ensure bald areas are completely filled in. Never return multiple prompt options. Never modify the face in any way. Always follow the white guideline if present.",
-        },
-        {
-          role: "user",
-          content: [
-            { type: "text", text: promptText },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/png;base64,${base64Image}`,
-              },
-            },
-          ],
-        },
-      ],
-      temperature: 0.6,
-    });
+    // const response = await openai.chat.completions.create({
+    //   model: "gpt-4o",
+    //   messages: [
+    //     {
+    //       role: "system",
+    //       content:
+    //         "You are a visual prompt engineer specialized in generating a single, precise prompt for a hair enhancement AI. Use ((double parentheses)) around important instructions. Ensure bald areas are completely filled in. Never return multiple prompt options. Never modify the face in any way. Always follow the white guideline if present.",
+    //     },
+    //     {
+    //       role: "user",
+    //       content: [
+    //         { type: "text", text: promptText },
+    //         {
+    //           type: "image_url",
+    //           image_url: {
+    //             url: `data:image/png;base64,${base64Image}`,
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   ],
+    //   temperature: 0.6,
+    // });
 
-    const content = response.choices[0].message.content || "";
+    const content = promptText || "";
 
     if (content.includes("I'm sorry") && retryCount < maxRetries) {
       console.warn(
