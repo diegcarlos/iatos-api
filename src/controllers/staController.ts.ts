@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { gerarPromptComImagem } from "../services/openiIa";
 import { StabilityAIService } from "../services/staServices";
 
 export class StaController {
@@ -73,7 +72,7 @@ export class StaController {
         return;
       }
 
-      const newPrompt = await gerarPromptComImagem(imageFile, age, volume);
+      const newPrompt = this.staService.buscaPrompt();
       const negativePrompt = this.staService.buscaNegativePrompt();
 
       const prompt = this.staService.buscaPrompt();
