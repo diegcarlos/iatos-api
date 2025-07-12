@@ -74,6 +74,7 @@ export class StaController {
       }
 
       const newPrompt = await gerarPromptComImagem(imageFile, age, volume);
+      const negativePrompt = this.staService.buscaNegativePrompt();
 
       const prompt = this.staService.buscaPrompt();
 
@@ -87,7 +88,8 @@ export class StaController {
       const result = await this.staService.editImageWithInpaint({
         imagePath: imageFile,
         maskPath: maskFile,
-        prompt: newPrompt || "",
+        prompt: newPrompt,
+        negativePrompt: negativePrompt,
       });
 
       res.json(result);
