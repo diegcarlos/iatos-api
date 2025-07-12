@@ -42,8 +42,25 @@ export class UploadController {
       }
 
       const imageFile = files["image"][0];
-      //redimencionar a imagem para no maximo 1024px
-      const imageBuffer = await sharp(imageFile.path).resize(1024).toBuffer();
+
+      // Redimensionar a imagem para altura máxima de 1024px, mantendo proporção
+      let imageBuffer: Buffer;
+      try {
+        imageBuffer = await sharp(imageFile.path)
+          .resize(null, 1024, {
+            withoutEnlargement: true,
+            fit: "inside",
+          })
+          .toBuffer();
+      } catch (resizeError) {
+        console.error("Erro ao redimensionar imagem:", resizeError);
+        res.status(400).json({
+          error:
+            "Erro ao processar imagem. Verifique se o arquivo é uma imagem válida.",
+        });
+        return;
+      }
+
       imageFile.buffer = imageBuffer;
       if (!imageFile) {
         res.status(400).json({
