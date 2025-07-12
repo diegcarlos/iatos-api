@@ -45,7 +45,7 @@ export async function gerarPromptComImagem(
     .filter(Boolean)
     .join(" ");
 
-  const promptText = `((fully fill in the bald area)) within the white guideline using ((extremely dense, thick, realistic hair)). ((Follow the white line exactly — it defines the area for hair restoration)). The result must be natural and photorealistic. The added hair should ((match the original color, direction, texture, and lighting perfectly)) with ((no visible scalp)). ((Do not alter the face under any circumstances)) — the skin, expression, and facial features must remain exactly as in the original image. ${specs}`;
+  const promptText = `((completely fill in the bald area)) ((within the white guideline where present)) using ((extremely dense, thick, realistic hair)). ((Follow the white line exactly—it defines the area for hair restoration)). The result should be natural and photorealistic. The added hair should ((perfectly match the original color, direction, texture, and lighting)) without ((visible scalp)). ((Do not alter the face under any circumstances))—the skin, expression, and facial features should remain exactly as in the original image. ${specs}`;
 
   try {
     // const response = await openai.chat.completions.create({
