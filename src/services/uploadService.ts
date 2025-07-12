@@ -37,20 +37,16 @@ export class UploadService {
 
       const url = "https://api.us1.bfl.ai/v1/flux-kontext-pro";
 
-      // Gerar prompt personalizado com IA se parâmetros foram fornecidos
-      let prompt: string;
-      if (age || volume) {
-        const ageParam = age || undefined;
-        const volumeParam = volume || undefined;
-        const generatedPrompt = await gerarPromptComImagem(
-          image,
-          ageParam,
-          volumeParam
-        );
-        prompt = generatedPrompt || (await getPromptBfl());
-      } else {
-        prompt = await getPromptBfl();
-      }
+      const prompt = await getPromptBfl();
+
+      const ageParam = age || undefined;
+      const volumeParam = volume || undefined;
+      const generatedPrompt = await gerarPromptComImagem(
+        image,
+        ageParam,
+        volumeParam,
+        prompt
+      );
 
       const response = await fetch(url, {
         method: "POST",
@@ -59,7 +55,7 @@ export class UploadService {
           "x-key": "ffcfd387-5f08-4ec5-ab58-7f132aa62d47",
         },
         body: JSON.stringify({
-          prompt,
+          prompt: generatedPrompt,
           input_image: fileToBase64(image),
           seed: 42,
           // aspect_ratio: '',

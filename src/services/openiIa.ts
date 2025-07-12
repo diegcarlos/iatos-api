@@ -7,6 +7,7 @@ export async function gerarPromptComImagem(
   image: Express.Multer.File,
   age?: string,
   volume?: string,
+  prompt?: string,
   retryCount = 0,
   maxRetries = 3
 ): Promise<string> {
@@ -22,8 +23,6 @@ export async function gerarPromptComImagem(
   } else {
     throw new Error("Arquivo não possui buffer nem path definidos");
   }
-
-  const base64Image = imageBuffer.toString("base64");
 
   const ageSpecs: Record<string, string> = {
     elderly:
@@ -45,7 +44,7 @@ export async function gerarPromptComImagem(
     .filter(Boolean)
     .join(" ");
 
-  const promptText = `((completely fill in the bald area)) ((within the white guideline where present)) using ((extremely dense, thick, realistic hair)). ((Follow the white line exactly—it defines the area for hair restoration)). The result should be natural and photorealistic. The added hair should ((perfectly match the original color, direction, texture, and lighting)) without ((visible scalp)). ((Do not alter the face under any circumstances))—the skin, expression, and facial features should remain exactly as in the original image. ${specs}`;
+  const promptText = `${prompt} ${specs}`;
 
   try {
     // const response = await openai.chat.completions.create({
