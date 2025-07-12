@@ -43,10 +43,19 @@ export class UploadController {
 
       const imageFile = files["image"][0];
 
+      // Validar se o arquivo existe e tem dados
+      if (!imageFile || !imageFile.buffer) {
+        res.status(400).json({
+          error: "Arquivo de imagem inválido ou vazio",
+        });
+        return;
+      }
+
       // Redimensionar a imagem para altura máxima de 1024px, mantendo proporção
       let imageBuffer: Buffer;
       try {
-        imageBuffer = await sharp(imageFile.path)
+        // Usar o buffer diretamente em vez do path
+        imageBuffer = await sharp(imageFile.buffer)
           .resize(null, 1024, {
             withoutEnlargement: true,
             fit: "inside",
@@ -56,18 +65,12 @@ export class UploadController {
         console.error("Erro ao redimensionar imagem:", resizeError);
         res.status(400).json({
           error:
-            "Erro ao processar imagem. Verifique se o arquivo é uma imagem válida.",
+            "Erro ao processar imagem. Verifique se o arquivo é uma imagem válida (JPG, PNG, etc.).",
         });
         return;
       }
 
       imageFile.buffer = imageBuffer;
-      if (!imageFile) {
-        res.status(400).json({
-          error: "Arquivo de imagem inválido",
-        });
-        return;
-      }
 
       // Extrair parâmetros opcionais do FormData
       const age = req.body.age || null;
