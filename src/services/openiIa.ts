@@ -81,6 +81,7 @@ export async function gerarPromptComImagem(
         image,
         age,
         volume,
+        prompt,
         retryCount + 1,
         maxRetries
       );
