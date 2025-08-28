@@ -1,15 +1,18 @@
 import { Request, Response } from "express";
 import sharp from "sharp";
+import { UploadServiceNanoBanana } from "../services/nanoBananaService";
 import { R2Service } from "../services/r2Service.js";
 import { createUpdateBfl, getPromptBfl } from "../services/servicesBfl";
 import { UploadService } from "../services/uploadService";
 export class UploadController {
   private uploadService: UploadService;
   private r2Service: R2Service;
+  private uploadServiceNanoBanana: UploadServiceNanoBanana;
 
   constructor() {
     this.uploadService = new UploadService();
     this.r2Service = new R2Service();
+    this.uploadServiceNanoBanana = new UploadServiceNanoBanana();
   }
 
   //get prompt bfl
@@ -96,7 +99,13 @@ export class UploadController {
         return;
       }
 
-      const result: any = await this.uploadService.processBFL(
+      // const result: any = await this.uploadService.processBFL(
+      //   imageFile,
+      //   age,
+      //   volume
+      // );
+
+      const result: any = await this.uploadServiceNanoBanana.processNanoBanana(
         imageFile,
         age,
         volume
@@ -107,8 +116,9 @@ export class UploadController {
       }
       res.json(result);
     } catch (error: any) {
-      res.status(error.statusCode || 500).json({
-        ...error,
+      res.status(error.response?.statusCode || 500).json({
+        statusCode: error.response?.statusCode,
+        message: error.response?.statusText,
       });
     }
   }
@@ -173,7 +183,7 @@ export class UploadController {
       imageData.body.pipe(res);
     } catch (error: any) {
       console.error("Erro ao buscar imagem:", error);
-      res.status(500).json({
+      res.status(error.request.response?.status || 500).json({
         error: "Erro interno do servidor ao buscar imagem",
       });
     }
