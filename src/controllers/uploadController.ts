@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import sharp from "sharp";
 import { UploadServiceNanoBanana } from "../services/nanoBananaService";
 import { R2Service } from "../services/r2Service.js";
 import { createUpdateBfl, getPromptBfl } from "../services/servicesBfl";
@@ -55,25 +54,25 @@ export class UploadController {
       }
 
       // Redimensionar a imagem para altura máxima de 1024px, mantendo proporção
-      let imageBuffer: Buffer;
-      try {
-        // Usar o buffer diretamente em vez do path
-        imageBuffer = await sharp(imageFile.buffer)
-          .resize(null, 1024, {
-            withoutEnlargement: true,
-            fit: "inside",
-          })
-          .toBuffer();
-      } catch (resizeError) {
-        console.error("Erro ao redimensionar imagem:", resizeError);
-        res.status(400).json({
-          error:
-            "Erro ao processar imagem. Verifique se o arquivo é uma imagem válida (JPG, PNG, etc.).",
-        });
-        return;
-      }
+      // let imageBuffer: Buffer;
+      // try {
+      //   // Usar o buffer diretamente em vez do path
+      //   imageBuffer = await sharp(imageFile.buffer)
+      //     .resize(null, 1024, {
+      //       withoutEnlargement: true,
+      //       fit: "inside",
+      //     })
+      //     .toBuffer();
+      // } catch (resizeError) {
+      //   console.error("Erro ao redimensionar imagem:", resizeError);
+      //   res.status(400).json({
+      //     error:
+      //       "Erro ao processar imagem. Verifique se o arquivo é uma imagem válida (JPG, PNG, etc.).",
+      //   });
+      //   return;
+      // }
 
-      imageFile.buffer = imageBuffer;
+      //imageFile.buffer = imageBuffer;
 
       // Extrair parâmetros opcionais do FormData
       const age = req.body.age || null;
@@ -111,11 +110,9 @@ export class UploadController {
         volume
       );
 
-      if (result.statusCode !== 200) {
-        throw result;
-      }
       res.json(result);
     } catch (error: any) {
+      console.error(error);
       res.status(error.response?.statusCode || 500).json({
         statusCode: error.response?.statusCode,
         message: error.response?.statusText,
