@@ -44,7 +44,8 @@ export async function gerarPromptComImagem(
     .filter(Boolean)
     .join(" ");
 
-  const promptText = `${prompt} ${specs}`;
+  // const promptText = `${prompt} ${specs}`;
+  const promptText = `${prompt}`;
 
   try {
     // const response = await openai.chat.completions.create({
