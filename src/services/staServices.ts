@@ -58,11 +58,9 @@ export class StabilityAIService {
       const response = await axios.post(this.baseUrl, formData, {
         headers: {
           ...formData.getHeaders(),
-          "stability-client-id": "my-awesome-app",
-          "stability-client-user-id": "DiscordUser#9999",
-          "stability-client-version": "1.2.1",
           authorization: this.apiKey,
           Accept: "application/json",
+          grow_mask: 5,
         },
         timeout: 60000, // 60 segundos de timeout
       });
