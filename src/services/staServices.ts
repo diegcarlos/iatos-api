@@ -52,7 +52,7 @@ export class StabilityAIService {
       // Adicionar outros parâmetros
       formData.append("prompt", finalPrompt);
       formData.append("negative_prompt", this.buscaNegativePrompt());
-      formData.append("grow_mask", (params.growMask || 5).toString());
+      // formData.append("grow_mask", (params.growMask || 5).toString());
       formData.append("output_format", "webp");
 
       const response = await axios.post(this.baseUrl, formData, {
@@ -60,7 +60,7 @@ export class StabilityAIService {
           ...formData.getHeaders(),
           authorization: this.apiKey,
           Accept: "application/json",
-          grow_mask: 5,
+          grow_mask: 3,
         },
         timeout: 60000, // 60 segundos de timeout
       });
